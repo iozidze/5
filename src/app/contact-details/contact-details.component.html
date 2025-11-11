@@ -1,0 +1,33 @@
+<div *ngIf="contact" class="card">
+  <div class="card-header">
+    <h5 *ngIf="contact._id">Редактирование контакта</h5>
+    <h5 *ngIf="!contact._id">Создание нового контакта</h5>
+  </div>
+  <div class="card-body">
+    <form (ngSubmit)="saveContact()">
+      <div class="mb-3">
+        <label class="form-label">Имя</label>
+        <input type="text" class="form-control" [(ngModel)]="contact.name" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" [(ngModel)]="contact.email" name="email">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Мобильный телефон</label>
+        <input type="text" class="form-control" [(ngModel)]="contact.phone.mobile" name="mobile">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Рабочий телефон</label>
+        <input type="text" class="form-control" [(ngModel)]="contact.phone.work" name="work">
+      </div>
+
+      <button type="submit" class="btn btn-primary me-2">Сохранить</button>
+      <button type="button" *ngIf="contact._id" class="btn btn-danger" (click)="deleteContact()">Удалить</button>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="!contact" class="alert alert-info">
+  Выберите контакт из списка слева или создайте новый.
+</div>
