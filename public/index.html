@@ -3,13 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Телефонная книга - REST API</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Телефонная книга</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-section, .contacts-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 1.4em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .contacts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .contact-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .contact-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .contact-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .contact-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .contact-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .contact-details {
+            color: #6c757d;
+        }
+        
+        .contact-email, .contact-phone {
+            margin-bottom: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+        }
+        
+        .message.success {
+            background: #27ae60;
+        }
+        
+        .message.error {
+            background: #e74c3c;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Телефонная книга</h1>
+            <h1>📞 Телефонная книга</h1>
+            <p>Простое приложение без базы данных</p>
         </header>
 
         <div class="main-content">
@@ -43,15 +257,178 @@
                     </div>
                 </div>
 
-                <div id="loading" class="loading">Загрузка...</div>
-                <div id="contacts-list" class="contacts-list"></div>
+                <div id="contacts-list" class="contacts-list">
+                    <div class="empty-state">
+                        <h3>Контактов пока нет</h3>
+                        <p>Добавьте первый контакт с помощью формы</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Статус сообщения -->
-        <div id="message" class="message"></div>
+        <div id="message" class="message" style="display: none;"></div>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        // Базовый URL API
+        const API_URL = '';
+
+        // Загрузка контактов при старте
+        document.addEventListener('DOMContentLoaded', function() {
+            loadContacts();
+            
+            // Обработчик формы
+            document.getElementById('contact-form').addEventListener('submit', handleFormSubmit);
+        });
+
+        // Загрузка всех контактов
+        async function loadContacts() {
+            try {
+                const response = await fetch(`${API_URL}/api/contacts`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayContacts(result.data);
+                    document.getElementById('contacts-count').textContent = result.count;
+                } else {
+                    showMessage('Ошибка при загрузке контактов', 'error');
+                }
+            } catch (error) {
+                showMessage('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+
+        // Отображение контактов
+        function displayContacts(contacts) {
+            const container = document.getElementById('contacts-list');
+            
+            if (contacts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Контактов пока нет</h3>
+                        <p>Добавьте первый контакт с помощью формы</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = contacts.map(contact => `
+                <div class="contact-item">
+                    <div class="contact-header">
+                        <div class="contact-name">${contact.username}</div>
+                        <div class="contact-actions">
+                            <button class="action-btn delete-btn" onclick="deleteContact('${contact._id}')" title="Удалить">
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                    <div class="contact-details">
+                        <div class="contact-email">📧 ${contact.email}</div>
+                        <div class="contact-phone">
+                            📱 ${contact.phone.mobile}
+                            ${contact.phone.home ? ` • 🏠 ${contact.phone.home}` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Обработчик формы
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                phone: {
+                    mobile: document.getElementById('mobile').value,
+                    home: document.getElementById('home').value
+                }
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/api/contacts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Контакт успешно создан!', 'success');
+                    document.getElementById('contact-form').reset();
+                    loadContacts();
+                } else {
+                    showMessage('Ошибка при создании: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+
+        // Удаление контакта
+        async function deleteContact(id) {
+            if (!confirm('Вы уверены, что хотите удалить этот контакт?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/contacts/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Контакт успешно удален!', 'success');
+                    loadContacts();
+                } else {
+                    showMessage('Ошибка при удалении: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+
+        // Удаление всех контактов
+        async function deleteAllContacts() {
+            if (!confirm('Вы уверены, что хотите удалить ВСЕ контакты? Это действие нельзя отменить.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/contacts`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(`Все контакты удалены!`, 'success');
+                    loadContacts();
+                } else {
+                    showMessage('Ошибка при удалении: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Ошибка сети: ' + error.message, 'error');
+            }
+        }
+
+        // Вспомогательные функции
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
