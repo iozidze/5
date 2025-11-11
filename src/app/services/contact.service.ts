@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ContactService {
-  private apiUrl = '/v1/contact';
+  private apiUrl = '/api/contacts'; // Исправлено с /v1/contact на /api/contacts
 
   constructor(private http: HttpClient) { }
 

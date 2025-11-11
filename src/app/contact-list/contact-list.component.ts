@@ -18,7 +18,14 @@ export class ContactListComponent implements OnInit {
   }
 
   getContacts(): void {
-    this.contactService.getContacts().subscribe(contacts => this.contacts = contacts);
+    this.contactService.getContacts().subscribe(
+      (response: any) => {
+        this.contacts = response.data || response;
+      },
+      error => {
+        console.error('Ошибка загрузки контактов:', error);
+      }
+    );
   }
 
   onSelect(contact: Contact): void {
@@ -27,34 +34,48 @@ export class ContactListComponent implements OnInit {
 
   createNewContact(): void {
     this.selectedContact = {
-      name: '',
+      username: '',
       email: '',
-      phone: { mobile: '', work: '' }
+      phone: { mobile: '', home: '' }
     };
   }
 
   onContactSaved(contact: Contact): void {
     if (!contact._id) {
-      this.contactService.createContact(contact).subscribe(newContact => {
-        this.contacts.push(newContact);
-        this.selectedContact = newContact;
-      });
-    } else {
-      this.contactService.updateContact(contact).subscribe(() => {
-        const index = this.contacts.findIndex(c => c._id === contact._id);
-        if (index !== -1) {
-          this.contacts[index] = contact;
+      this.contactService.createContact(contact).subscribe(
+        (newContact: any) => {
+          const createdContact = newContact.data || newContact;
+          this.contacts.push(createdContact);
+          this.selectedContact = createdContact;
+          this.getContacts(); // Обновляем список
+        },
+        error => {
+          console.error('Ошибка создания контакта:', error);
         }
-        this.selectedContact = contact;
-      });
+      );
+    } else {
+      this.contactService.updateContact(contact).subscribe(
+        () => {
+          this.getContacts(); // Обновляем весь список
+          this.selectedContact = contact;
+        },
+        error => {
+          console.error('Ошибка обновления контакта:', error);
+        }
+      );
     }
   }
 
   onContactDeleted(contactId: string | undefined): void {
     if (!contactId) return;
-    this.contactService.deleteContact(contactId).subscribe(() => {
-      this.contacts = this.contacts.filter(c => c._id !== contactId);
-      this.selectedContact = undefined;
-    });
+    this.contactService.deleteContact(contactId).subscribe(
+      () => {
+        this.contacts = this.contacts.filter(c => c._id !== contactId);
+        this.selectedContact = undefined;
+      },
+      error => {
+        console.error('Ошибка удаления контакта:', error);
+      }
+    );
   }
 }

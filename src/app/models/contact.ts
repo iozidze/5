@@ -1,9 +1,9 @@
 export class Contact {
   _id?: string;
-  name: string;
+  username: string;  // Изменено с name на username
   email: string;
   phone: {
     mobile: string;
-    work: string;
+    home?: string;   // Изменено с work на home
   }
 }
